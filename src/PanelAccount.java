@@ -24,8 +24,12 @@ public class PanelAccount extends JPanel {
 	private Image image_savings = new ImageIcon(PanelAccount.class.getResource("res/passbook.png")).getImage().getScaledInstance(40,40,Image.SCALE_SMOOTH);
 	
 	private static  Customer customer = new Customer();
-	private Acounts current_acount = new Acounts();
-	private Acounts savings_acount = new Acounts();
+	private static Acounts current_acount = new Acounts();
+	private static Acounts savings_acount = new Acounts();
+	private static JLabel lblsavingsbalance;
+	private static JLabel lblsavingsavialable;
+	private static JLabel lblcurrentbalance;
+	private static JLabel lblcurrencavialable;
 	
 	/**
 	 * Create the panel.
@@ -45,18 +49,19 @@ public class PanelAccount extends JPanel {
 		current_acount = current;
 		savings_acount = savings;
 		
+		
 		//System.out.println("Current Panel  : "  + current_acount.getAcount_number() +" " + current_acount.getAvialable());
 		//System.out.println("Savings Panel  : "  +  savings_acount.getAcount_number() +" " + savings_acount.getAvialable());
 		//System.out.println("From Acount Panel  : "  + customer.getFirst_name() +" " + customer.getLast_name());
 		
-		JLabel lblcurrencavialable = new JLabel("Avialable R" + current_acount.getAvialable());
+		lblcurrencavialable = new JLabel("Avialable R" + current_acount.getAvialable());
 		lblcurrencavialable.setHorizontalAlignment(SwingConstants.CENTER);
 		lblcurrencavialable.setFont(new Font("Arial", Font.BOLD, 14));
 		lblcurrencavialable.setForeground(new Color(255, 255, 255));
 		lblcurrencavialable.setBounds(0, 61, 521, 32);
 		panel.add(lblcurrencavialable);
 		
-		JLabel lblcurrentbalance = new JLabel("Balance R"+current_acount.getBalance());
+		lblcurrentbalance = new JLabel("Balance R"+current_acount.getBalance());
 		lblcurrentbalance.setHorizontalAlignment(SwingConstants.CENTER);
 		lblcurrentbalance.setForeground(Color.WHITE);
 		lblcurrentbalance.setFont(new Font("Arial", Font.BOLD, 14));
@@ -96,14 +101,14 @@ public class PanelAccount extends JPanel {
 		panel_2.setBounds(77, 244, 521, 140);
 		add(panel_2);
 		
-		JLabel lblsavingsavialable = new JLabel("Avialable R"+ savings_acount.getAvialable());
+		lblsavingsavialable = new JLabel("Avialable R"+ savings_acount.getAvialable());
 		lblsavingsavialable.setHorizontalAlignment(SwingConstants.CENTER);
 		lblsavingsavialable.setForeground(Color.WHITE);
 		lblsavingsavialable.setFont(new Font("Arial", Font.BOLD, 14));
 		lblsavingsavialable.setBounds(0, 61, 521, 32);
 		panel_2.add(lblsavingsavialable);
 		
-		JLabel lblsavingsbalance = new JLabel("Balance R"+ savings_acount.getAvialable());
+		lblsavingsbalance = new JLabel("Balance R"+ savings_acount.getAvialable());
 		lblsavingsbalance.setHorizontalAlignment(SwingConstants.CENTER);
 		lblsavingsbalance.setForeground(Color.WHITE);
 		lblsavingsbalance.setFont(new Font("Arial", Font.BOLD, 14));
@@ -136,5 +141,55 @@ public class PanelAccount extends JPanel {
 		lblsavingsacountnumber_1.setFont(new Font("Arial", Font.BOLD, 14));
 		lblsavingsacountnumber_1.setBounds(163, 34, 182, 19);
 		panel_1_1.add(lblsavingsacountnumber_1);
+		updateUseracount(customer.getUser_id());
+	}
+	
+	public static void updateUseracount(String userid) {
+		 // File path is passed as parameter
+ File file = new File("Account.txt");
+ // Note:  Double backquote is to avoid compiler
+ BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(file));
+		      String st;
+		        while ((st = br.readLine()) != null){
+		            System.out.println(st);
+		            StringTokenizer token = new StringTokenizer(st);
+		            String acount_id = token.nextToken();
+		            int acount_number = Integer.parseInt(token.nextToken());
+		            int accounttype = Integer.parseInt(token.nextToken());
+		            double avialable = Double.parseDouble(token.nextToken());
+		            double balance =  Double.parseDouble(token.nextToken());
+		            String user_id = token.nextToken();
+		              
+		            Acounts acou = new Acounts(acount_id,acount_number,accounttype,avialable,balance,user_id);
+		            
+                 if(user_id.equals(userid)) {
+		            	if(accounttype == 0) {
+		            	   savings_acount = acou;
+		            	}else if(accounttype == 1) {
+		            		current_acount = acou;
+		            	}
+		            }
+		            
+		        }
+		        
+		        updateTransactiondata();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ // Declaring a string variable
+    catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void updateTransactiondata() {
+		lblsavingsavialable.setText("Avialable : R"+ savings_acount.getAvialable());
+		lblsavingsbalance.setText("Balance : R" + savings_acount.getBalance());
+		lblcurrencavialable.setText("Avialable : R" + current_acount.getAvialable());
+		lblcurrentbalance.setText("Balance : R" + current_acount.getBalance());
 	}
 }

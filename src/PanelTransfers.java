@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.awt.Color;
 import javax.swing.SwingConstants;
 
@@ -21,19 +22,25 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class PanelTransfers extends JPanel implements ActionListener {
 
 	private static  Customer customer = new Customer();
 	private String[] acounts,nexts;
-	private Acounts current_acount = new Acounts();
-	private Acounts savings_acount = new Acounts();
-	private JLabel lblrightavail;
-	private JLabel lblrightbalance;
-	private JLabel lblleftavail;
-	private JLabel lblleftbalance;
-	private JComboBox comboTo;
-	private JComboBox combofrom;
+	private static Acounts current_acount = new Acounts();
+	private static Acounts savings_acount = new Acounts();
+	private static JLabel lblrightavail;
+	private static JLabel lblrightbalance;
+	private static JLabel lblleftavail;
+	private static JLabel lblleftbalance;
+	private static JComboBox comboTo;
+	private static JComboBox combofrom;
 	private JPanel panel_3;
 	private JTextField txtAmount;
 	
@@ -45,6 +52,7 @@ public class PanelTransfers extends JPanel implements ActionListener {
 	/**
 	 * Create the panel.
 	 */
+	@SuppressWarnings("unchecked")
 	public PanelTransfers(Customer cust,Acounts savings,Acounts current) {
 		setBackground(new Color(165, 42, 42));
 		setBounds(0,0,669, 476);
@@ -53,6 +61,7 @@ public class PanelTransfers extends JPanel implements ActionListener {
 		customer = cust;
 		current_acount = current;
 		savings_acount = savings;
+		//System.out.print("savaings : " + savings_acount.getAcount_id() +  " Current acount : " + current_acount.getAcount_id());
 		nexts = new String[] {"Savings Account (" + savings_acount.getAcount_number() +")","Current Account (" + current_acount.getAcount_number() +")"};
 		acounts = new String[] {"Savings Account (" + savings_acount.getAcount_number() +")","Current Account (" + current_acount.getAcount_number() +")"};
 		
@@ -167,6 +176,36 @@ public class PanelTransfers extends JPanel implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				lblapology.setText("I 'am sorry i didnt have enough time , to complete this!");
+				
+				if(combofrom.getSelectedIndex() == 0) {
+					System.out.println("Proccess from savings to current Started");
+					double transferamount = Double.parseDouble(txtAmount.getText());
+					
+				    double savingAvial  = savings_acount.getAvialable() - transferamount;
+				    double savingBalance  = savings_acount.getBalance() - transferamount;
+				    
+				    double currentAvial = current_acount.getAvialable() + transferamount;
+				    double currentBalance = current_acount.getBalance() + transferamount;
+				   
+				    String savingsaccount = savings_acount.getAcount_id()  + " "+ savings_acount.getAcount_number() + " " + savings_acount.getAcount_type() + " " + savingAvial  + " " + savingBalance + " " + savings_acount.getUser_id();
+				    String currentacount =  current_acount.getAcount_id()  + " "+ current_acount.getAcount_number() + " " + current_acount.getAcount_type() + " " + currentAvial  + " " + currentBalance + " " + current_acount.getUser_id();
+					
+				    replaceSelected(savings_acount.getAcount_id(),savingsaccount,current_acount.getAcount_id(),currentacount);
+				 }else if(combofrom.getSelectedIndex() == 1) {
+					 System.out.println("Proccess from current to savings Started");
+					 double transferamount = Double.parseDouble(txtAmount.getText());
+					 
+					 double  currentAvial= current_acount.getAvialable() - transferamount;
+					 double  currentBalance = current_acount.getBalance() - transferamount;
+					 
+					 double savingAvial = savings_acount.getAvialable() + transferamount;
+					 double savingBalance = savings_acount.getBalance() + transferamount;
+					 
+					 String savingsaccount = savings_acount.getAcount_id()  + " "+ savings_acount.getAcount_number() + " " + savings_acount.getAcount_type() + " " + savingAvial  + " " + savingBalance + " " + savings_acount.getUser_id();
+					 String currentacount =  current_acount.getAcount_id()  + " "+ current_acount.getAcount_number() + " " + current_acount.getAcount_type() + " " + currentAvial  + " " + currentBalance + " " + current_acount.getUser_id();
+						
+					 replaceSelected(savings_acount.getAcount_id(),savingsaccount,current_acount.getAcount_id(),currentacount);
+				 }
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -251,6 +290,108 @@ public class PanelTransfers extends JPanel implements ActionListener {
 				
 				combofrom.setSelectedIndex(0);
 			}*/
+		}
+	}
+	
+	public static void replaceSelected(String oldline, String newline,String oldlinec, String newlinec) {
+		 try {
+		        // input the (modified) file content to the StringBuffer "input"
+		        BufferedReader file = new BufferedReader(new FileReader("Account.txt"));
+		        StringBuffer inputBuffer = new StringBuffer();
+		        String line;
+
+		        System.out.println("Savings acount id = " + oldline + " Replace with =" +newline );
+		        System.out.println("Current acount id = " + oldlinec + " Replace with =" +newlinec); 
+		        while ((line = file.readLine()) != null) {
+		             // replace the line here
+		        	StringTokenizer token = new StringTokenizer(line);
+		        	String acountId = token.nextToken();
+
+		            if(acountId.equals(oldline)) {
+		            	 System.out.println("Savings account found!");
+			            inputBuffer.append(newline);
+			            inputBuffer.append('\n');
+		            }else if (acountId.equals(oldlinec)) {
+		            	 System.out.println("Current acount found!");
+		            	 inputBuffer.append(newlinec);
+				         inputBuffer.append('\n');
+		            }else {
+		            	 inputBuffer.append(line);
+				         inputBuffer.append('\n');
+		            }
+		        }
+		        	        
+		        file.close();
+
+		        // write the new string with the replaced line OVER the same file
+		        FileOutputStream fileOut = new FileOutputStream("Account.txt");
+		        fileOut.write(inputBuffer.toString().getBytes());
+		        fileOut.close();
+		        
+		        System.out.println("Data updated!");
+		        updateUseracount(customer.getUser_id());
+
+		    } catch (Exception e) {
+		        System.out.println("Problem reading file.");
+		    }
+	}
+	
+	private static void updateUseracount(String userid) {
+		 // File path is passed as parameter
+   File file = new File("Account.txt");
+   // Note:  Double backquote is to avoid compiler
+   BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(file));
+		      String st;
+		        while ((st = br.readLine()) != null){
+		            System.out.println(st);
+		            StringTokenizer token = new StringTokenizer(st);
+		            String acount_id = token.nextToken();
+		            int acount_number = Integer.parseInt(token.nextToken());
+		            int accounttype = Integer.parseInt(token.nextToken());
+		            double avialable = Double.parseDouble(token.nextToken());
+		            double balance =  Double.parseDouble(token.nextToken());
+		            String user_id = token.nextToken();
+		              
+		            Acounts acou = new Acounts(acount_id,acount_number,accounttype,avialable,balance,user_id);
+		            
+                   if(user_id.equals(userid)) {
+		            	if(accounttype == 0) {
+		            	   savings_acount = acou;
+		            	}else if(accounttype == 1) {
+		            		current_acount = acou;
+		            	}
+		            }
+		            
+		        }
+		        
+		        updateTransactiondata();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+   // Declaring a string variable
+      catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void updateTransactiondata() {
+		int indexfrom = combofrom.getSelectedIndex();
+		if(indexfrom == 0) {
+			comboTo.setSelectedIndex(1);
+			lblleftavail.setText("Avialable : R"+ savings_acount.getAvialable());
+			lblleftbalance.setText("Balance : R" + savings_acount.getBalance());
+			lblrightavail.setText("Avialable : R" + current_acount.getAvialable());
+			lblrightbalance.setText("Balance : R" + current_acount.getBalance());
+		}else if(indexfrom == 1) {
+			lblleftavail.setText("Avialable : R"+ current_acount.getAvialable());
+			lblleftbalance.setText("Balance : R" + current_acount.getBalance());
+			lblrightavail.setText("Avialable : R" + savings_acount.getAvialable());
+			lblrightbalance.setText("Balance : R" + savings_acount.getBalance());
+	     	comboTo.setSelectedIndex(0);				
 		}
 	}
 }

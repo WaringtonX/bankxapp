@@ -106,6 +106,7 @@ public class DashboardFrame extends JFrame {
 		panelHome.addMouseListener(new PanelButtonMouseAdapter(panelHome) {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				panelaccount.updateUseracount(customer.getUser_id());
 				menuClicked(panelaccount);
 			}
 		});

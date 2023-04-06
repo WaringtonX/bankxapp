@@ -2,26 +2,25 @@ package model;
 
 public class Acounts {
 
-	private String user_id;
+	private String acount_id;
 	private int acount_number;
 	private int acount_type;
 	private double avialable;
 	private double balance;
-	private String acount_id;
+	private String user_id;
 	
 	public Acounts() {
 		
 	}
 	
-	public Acounts(String user_id, int acount_number, int acount_type, double avialable, double balance,
-			String acount_id) {
+	public Acounts(String acount_id, int acount_number, int acount_type, double avialable, double balance,String user_id) {
 		super();
-		this.user_id = user_id;
+		this.acount_id = acount_id;
 		this.acount_number = acount_number;
 		this.acount_type = acount_type;
 		this.avialable = avialable;
 		this.balance = balance;
-		this.acount_id = acount_id;
+		this.user_id = user_id;
 	}
 	
 	public String getAcount_id() {
