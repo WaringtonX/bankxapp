@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import lib.ImageUtills;
 import model.Acounts;
 import model.Customer;
 
@@ -29,6 +31,7 @@ import java.awt.Font;
 public class DashboardFrame extends JFrame {
 
 	private JPanel panelMenu;
+	private BufferedImage image_account2 = new ImageUtills().scaleImage(30, 30, DashboardFrame.class.getResource("res/account.png"));
 	private Image image_logo = new ImageIcon(DashboardFrame.class.getResource("res/banl.png")).getImage().getScaledInstance(80,80,Image.SCALE_SMOOTH);
 	private Image image_account = new ImageIcon(DashboardFrame.class.getResource("res/account.png")).getImage().getScaledInstance(30,30,Image.SCALE_SMOOTH);
 	private Image image_transfers = new ImageIcon(DashboardFrame.class.getResource("res/transfer.png")).getImage().getScaledInstance(30,30,Image.SCALE_SMOOTH);
@@ -123,6 +126,7 @@ public class DashboardFrame extends JFrame {
 		panelHome.add(lblNewLabel);
 		
 		JLabel lbliconaccount = new JLabel("");
+		lbliconaccount.setForeground(new Color(0, 0, 0));
 		lbliconaccount.setHorizontalAlignment(SwingConstants.CENTER);
 		lbliconaccount.setIcon(new ImageIcon(image_account));
 		lbliconaccount.setBounds(7, 0, 45, 36);

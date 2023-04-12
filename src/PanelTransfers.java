@@ -3,6 +3,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.awt.Color;
@@ -23,10 +24,12 @@ import javax.swing.JTextField;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class PanelTransfers extends JPanel implements ActionListener {
@@ -191,12 +194,18 @@ public class PanelTransfers extends JPanel implements ActionListener {
 				    String currentacount =  current_acount.getAcount_id()  + " "+ current_acount.getAcount_number() + " " + current_acount.getAcount_type() + " " + currentAvial  + " " + currentBalance + " " + current_acount.getUser_id();
 					
 				    replaceSelected(savings_acount.getAcount_id(),savingsaccount,current_acount.getAcount_id(),currentacount);
+				    
+				    String trans_id = getAlphaNumericString(10);
+				    String date = new Date().toLocaleString();
+				    String description = "BannkX Transfer to Current Acount " +  current_acount.getAcount_id();
+				    String TransferString = trans_id + " " + date + " " + transferamount + " " + savingAvial + " 0 " + savings_acount.getAcount_id() + " " + customer.getUser_id() +  " " + description;
+				    WriteTextTransfer("Transactions.txt", TransferString);
 				 }else if(combofrom.getSelectedIndex() == 1) {
 					 System.out.println("Proccess from current to savings Started");
 					 double transferamount = Double.parseDouble(txtAmount.getText());
 					 
 					 double  currentAvial= current_acount.getAvialable() - transferamount;
-					 double  currentBalance = current_acount.getBalance() - transferamount;
+					 double  currentBalance = current_acount.getBalance() - transferamount; 
 					 
 					 double savingAvial = savings_acount.getAvialable() + transferamount;
 					 double savingBalance = savings_acount.getBalance() + transferamount;
@@ -205,6 +214,12 @@ public class PanelTransfers extends JPanel implements ActionListener {
 					 String currentacount =  current_acount.getAcount_id()  + " "+ current_acount.getAcount_number() + " " + current_acount.getAcount_type() + " " + currentAvial  + " " + currentBalance + " " + current_acount.getUser_id();
 						
 					 replaceSelected(savings_acount.getAcount_id(),savingsaccount,current_acount.getAcount_id(),currentacount);
+					 
+					   String trans_id = getAlphaNumericString(10);
+					    String date = new Date().toLocaleString();
+					    String description = "BannkX Transfer to Savings Acount " +  savings_acount.getAcount_id();
+					    String TransferString = trans_id + " " + date + " " + transferamount + " " + savingAvial + " 0 " + savings_acount.getAcount_id() + " " + customer.getUser_id() +  " " + description;
+					    WriteTextTransfer("Transactions.txt", TransferString);
 				 }
 			}
 			@Override
@@ -394,4 +409,52 @@ public class PanelTransfers extends JPanel implements ActionListener {
 	     	comboTo.setSelectedIndex(0);				
 		}
 	}
+	
+	public void WriteTextTransfer(String path,String data) {
+	    BufferedWriter bw = null;
+	    try {
+	        FileWriter fw = new FileWriter(path,true);
+	        bw = new BufferedWriter(fw);
+	        bw.write(data);
+	        bw.newLine();
+	        System.out.println("done");
+	        System.out.println(data);
+	    }
+	    catch(Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if( bw != null ) {
+	            try {
+	                bw.close();
+	            } catch (IOException e) {
+	                // ignore
+	            }
+	        }
+	    }
+	}
+	
+	static String getAlphaNumericString(int n)
+	{
+	  // choose a Character random from this String
+	  String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	         + "0123456789"
+	         + "abcdefghijklmnopqrstuvxyz";
+	 
+	  // create StringBuffer size of AlphaNumericString
+	  StringBuilder sb = new StringBuilder(n);
+	 
+	  for (int i = 0; i < n; i++) {
+	 
+	   // generate a random number between
+	   // 0 to AlphaNumericString variable length
+	   int index = (int)(AlphaNumericString.length()
+	      * Math.random());
+	 
+	    // add Character one by one in end of sb
+	    sb.append(AlphaNumericString
+	      .charAt(index));
+	    }
+	 
+	  return sb.toString();
+	 }
 }
